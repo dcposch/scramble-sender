@@ -1,0 +1,27 @@
+{
+  "name": "scramble-sender",
+  "version": "0.0.1",
+  "description": "Send encrypted email through an anonymous remailer",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && node test.js | tap-nyan"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcposch/scramble-sender.git"
+  },
+  "author": "DC",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/dcposch/scramble-sender/issues"
+  },
+  "homepage": "https://github.com/dcposch/scramble-sender#readme",
+  "dependencies": {
+    "axolotl": "*"
+  },
+  "devDependencies": {
+    "tape": "*",
+    "tap-nyan": "*",
+    "standard": "*"
+  }
+}

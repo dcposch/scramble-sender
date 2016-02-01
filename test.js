@@ -1,5 +1,6 @@
 var test = require('tape')
 var sender = require('.')
+var prettyPrint = require('./prettyPrint')
 
 test('foo', function (t) {
   t.equal('foo', 'foo')
@@ -26,60 +27,34 @@ test('communicate', function (t) {
 
       console.log('\n\nA to B: hello world')
       var preKeyBundleForB = {
+        registrationId: storeB.getLocalRegistrationId(),
         identityKey: storeB.getLocalIdentityKeyPair().public,
-        preKeyId: 0,
-        preKey: storeB.getLocalPreKeyPair(0).keyPair.public,
+        preKeyId: null, // 0,
+        preKey: null, // storeB.getLocalPreKeyPair(0).keyPair.public,
         signedPreKeyId: 1,
         signedPreKey: storeB.getLocalSignedPreKeyPair(1).keyPair.public,
         signedPreKeySignature: storeB.getLocalSignedPreKeyPair(1).signature
       }
-      console.log(['preKeyBundleForB', preKeyBundleForB])
 
       console.log('Creating sessAtoB')
-      axolA.createSessionFromPreKeyBundle(preKeyBundleForB).then(function (sessAtoB) {
+      var sessAtoB = null
+      axolA.createSessionFromPreKeyBundle(preKeyBundleForB).then(function (result) {
         console.log('Encrypting message from A to B')
-        return axolA.encryptMessage(sessAtoB, toBytes('magic letters'))
+        sessAtoB = result
+        return axolA.encryptMessage(sessAtoB, new Buffer('magic letters'))
       }, function (err) {
         t.end('failed to create session')
       }).then(function (msg) {
-        console.log('Encrypted! message:' + prettyPrint(msg, 1))
-        console.log('B decrypting message')
-        return axolB.decryptPreKeyWhisperMessage(null, msg.body)
+        console.log('Encrypted! message:' + prettyPrint(msg.body))
+        return axolB.decryptPreKeyWhisperMessage(undefined, msg.body)
       }, function (err) {
         t.end('failed to encrypt')
       }).then(function (msg) {
         console.log('Decrypted! message:' + prettyPrint(msg, 1))
         t.end()
       }, function (err) {
-        t.end('failed to decrypt: ' + prettyPrint(err))
+        t.end('failed to decrypt: ' + err)
       })
     })
   })
 })
-
-function prettyPrint (obj, level) {
-  if (typeof obj !== 'object' || obj === undefined || obj === null) {
-    return '' + obj
-  }
-  if (obj instanceof ArrayBuffer) {
-    return new Buffer(obj).toString('hex')
-  }
-  if (Array.isArray(obj) && obj.length === 0) {
-    return '[]'
-  }
-  if (Object.keys(obj).length === 0) {
-    return '{}'
-  }
-
-  var nextLevel = (level || 0) + 1
-  var newline = '\n' + new Array(nextLevel).join('  ')
-  // works for both objects and arrays
-  var lines = Object.keys(obj).map(function (key) {
-    return key + ': ' + prettyPrint(obj[key], nextLevel)
-  })
-  return newline + lines.join(newline)
-}
-
-function toBytes (str) {
-  return new Uint8Array(new Buffer(str, 'utf8'))
-}

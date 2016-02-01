@@ -26,18 +26,18 @@ function register (callback) {
   var preKeyPairs = []
   var sessions = {}
   var store = {
-    getLocalIdentityKeyPair: function () { return identityKeyPair },
-    getLocalRegistrationId: function () { return registrationId },
-    getLocalSignedPreKeyPair: function (id) { return signedPreKeyPairs[id] },
-    getLocalPreKeyPair: function (id) { return preKeyPairs[id] },
+    getLocalIdentityKeyPair: function () { console.log('Store.gLIKP'); return identityKeyPair },
+    getLocalRegistrationId: function () { console.log('Store.gLRI'); return registrationId },
+    getLocalSignedPreKeyPair: function (id) { console.log('Store.gLSPKP ' + id); return signedPreKeyPairs[id] },
+    getLocalPreKeyPair: function (id) { console.log('Store.gLPKP ' + id); return preKeyPairs[id] },
 
     // the following are described in the libaxolotl-javascript README,
     // but are not actually used at all. weak.
-    getRemotePreKeyBundle: function() { throw new Error('unimplemented') },
+    /*getRemotePreKeyBundle: function() { throw new Error('unimplemented') },
     isRemoteIdentityTrusted: function() { throw new Error('unimplemented') },
     hasSession: function (name) { return !!sessions[name] },
     getSession: function (name) { return sessions[name] },
-    putSession: function(name, session) { sessions[name] = session } 
+    putSession: function (name, session) { sessions[name] = session } */
   }
 
   var axol = axolotl(store)
